@@ -5,3 +5,26 @@ body {
 a {
   color: #00b7ff;
 }
+#header {
+  width: auto;
+  height: auto;
+  border-radius: 20px;
+  border-width: thin;
+  border-style: solid;
+  border-color: "black";
+}
+h1,
+h2,
+h3,
+h4 {
+  text-align: center;
+}
+p {
+  padding-left: 25px;
+}
+#paper {
+  border-radius: 20px;
+  border-width: thin;
+  border-style: solid;
+  border-color: "black";
+}

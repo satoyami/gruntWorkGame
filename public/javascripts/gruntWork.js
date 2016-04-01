@@ -2,6 +2,7 @@
 
 // this is a game about moving weight
 // quickly in teams
+var paper = Raphael("paper", 600, 400);
 
 /*
  * Global Variable Definitions
@@ -11,7 +12,7 @@ var timecap = 180; // seconds in 3 minutes
 var distance = 60; // distance in feet
 var meter = 3.28084; // conversion of 1 foot to meters
 var kg = 2.20462; // conversion of kg to 1 pound
-var gametime = 3600;
+var gametime = 30000; // time in milliseconds
 
 var distm = function distm(dist) {
   return dist / meter;
@@ -58,14 +59,31 @@ function gruntWork(weight, dist, time) {
   return force;
 }
 
-function gruntGame(grunt1, grunt2, grunt3) {
-  var weightMoved = getTotalKgs;
-  var startGame = setInterval(function () {
-    while (weightMoved > 0) {
+function move(delay) {
+  var rect = paper.rect(10, 10, 50, 50).attr({
+    fill: "45-#f00-#000",
+    "stroke-width": 2,
+    stroke: "yellow"
+  }).animate({
+    x: 400
+  }, delay, function () {
+    console.log("rect");
+  });
+};
+
+function gruntGame() {
+  var weightMoved = getTotalLbs(weights);
+  var frames = 1000;
+  (function loop() {
+    setTimeout(function () {
       console.log(weightMoved);
-    }weightMoved - 100;
-  }, 1000);
-  //clearInterval(startGame);
+      if (weightMoved > 0) {
+        move(frames);
+        loop();
+      }
+      weightMoved -= 100;
+    }, frames);
+  })();
 }
 
 // add players
@@ -74,7 +92,7 @@ var player2 = Object.create(Player, { 'name': { value: 'Sally' }, 'agility': { v
 var player3 = Object.create(Player, { 'name': { value: 'Tim' }, 'agility': { value: 6 } });
 
 // start game
-gruntGame(player1, player2, player3);
+gruntGame();
 
 /*
 console.log("Total weight moved per round " + getTotalLbs(weights) + ' lbs');

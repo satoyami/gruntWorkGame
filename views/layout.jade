@@ -2,7 +2,21 @@ doctype html
 html
   head
     title= title
-    script(src='/javascripts/gruntWork.js')
+    script(src='/javascripts/raphael-min-2.1.4.js')
     link(rel='stylesheet', href='/stylesheets/style.css')
   body
-    block content
+    //header begin
+    #header
+      h1= title
+      p Welcome to #{title} Game
+    //header-end
+    //canvas-begin
+    #paper
+      script.
+        console.log("here some raphael.js")
+    //canvas-end
+    //footer-begin
+    #footer
+      p Satoyami 2016
+      script(src='/javascripts/gruntWork.js')
+    //footer-end

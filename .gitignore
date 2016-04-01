@@ -1,0 +1,6 @@
+routes
+gruntwork-scaffold/
+node_modules/
+public/favicon.ico
+public/javascripts/raphael-min-2.1.4.js
+public/javascripts/gruntWork.es6
