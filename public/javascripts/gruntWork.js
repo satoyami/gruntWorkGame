@@ -1,12 +1,9 @@
 'use strict';
 
-// this is a game about moving weight
-// quickly in teams
-var paper = Raphael("paper", 600, 400);
-
 /*
  * Global Variable Definitions
 */
+var paper = Raphael("paper", 600, 450);
 var people = 3; // number of people per team
 var timecap = 180; // seconds in 3 minutes
 var distance = 60; // distance in feet
@@ -21,10 +18,11 @@ var distm = function distm(dist) {
 console.log(distm(distance));
 
 // Player constructor object
-var Player = function Player(name, agility) {
-  this.name = name;
-  this.agility = agility;
-};
+var Player = {};
+// add players
+var player1 = Object.create(Player, { name: { value: 'Bob' }, agility: { value: 5 } });
+var player2 = Object.create(Player, { name: { value: 'Sally' }, agility: { value: 3 } });
+var player3 = Object.create(Player, { name: { value: 'Tim' }, agility: { value: 6 } });
 
 /*
  * amount of weight to move
@@ -33,9 +31,6 @@ var Player = function Player(name, agility) {
  */
 var weights = [{ 'name': 'pink', 'type': 'kettlebell', 'qty': 13, 'lbs': 15, 'pts': 1, 'load': 2 }, { 'name': 'blue', 'type': 'kettlebell', 'qty': 12, 'lbs': 25, 'pts': 2, 'load': 2 }, { 'name': 'yellow', 'type': 'kettlebell', 'qty': 6, 'lbs': 35, 'pts': 3, 'load': 2 }, { 'name': 'ten', 'type': 'plate', 'qty': 17, 'lbs': 10, 'pts': 1, 'load': 5 }, { 'name': 'fifteen', 'type': 'plate', 'qty': 19, 'lbs': 15, 'pts': 2, 'load': 3 }, { 'name': 'twentyfive', 'type': 'plate', 'qty': 16, 'lbs': 25, 'pts': 3, 'load': 3 }, { 'name': 'thirtyfive', 'type': 'plate', 'qty': 8, 'lbs': 35, 'pts': 4, 'load': 2 }, { 'name': 'fortyfive', 'type': 'plate', 'qty': 6, 'lbs': 45, 'pts': 5, 'load': 2 }, { 'name': 'bag', 'type': 'sandbag', 'qty': 1, 'lbs': 90, 'pts': 8, 'load': 1 }];
 
-/*
- * Game Constants
-*/
 function getTotalLbs(arr) {
   var total = 0;
   arr.forEach(function (w) {
@@ -52,33 +47,52 @@ function getTotalKgs(arr) {
   return total;
 }
 
-function gruntWork(weight, dist, time) {
+function force(weight, dist, time) {
   var mass = getTotalKgs(weight);
   var acceleration = dist / meter / Math.pow(time, 2);
   var force = mass * acceleration;
   return force;
 }
 
-function move(delay) {
-  var rect = paper.rect(10, 10, 50, 50).attr({
-    fill: "45-#f00-#000",
-    "stroke-width": 2,
-    stroke: "yellow"
-  }).animate({
-    x: 400
-  }, delay, function () {
-    console.log("rect");
-  });
+var Load = {
+  radius: 20,
+  movecircle: function movecircle(delay) {
+    var circle = paper.circle(30, this.offset, this.radius).attr({
+      fill: this.color,
+      "stroke-width": 2,
+      stroke: "black"
+    }).animate({
+      cx: 450
+    }, delay);
+  }
 };
+
+var Pink = Object.create(Load, { color: { value: "pink" }, offset: { value: 30 } });
+var Blue = Object.create(Load, { color: { value: "blue" }, offset: { value: 75 } });
+var Yellow = Object.create(Load, { color: { value: "yellow" }, offset: { value: 120 } });
+var Tens = Object.create(Load, { color: { value: "black" }, offset: { value: 165 } });
+var Fifteens = Object.create(Load, { color: { value: "black" }, offset: { value: 210 } });
+var Twentyfives = Object.create(Load, { color: { value: "black" }, offset: { value: 255 } });
+var Thirtyfives = Object.create(Load, { color: { value: "black" }, offset: { value: 300 } });
+var Fortyfives = Object.create(Load, { color: { value: "black" }, offset: { value: 345 } });
+var Bags = Object.create(Load, { color: { value: "green" }, offset: { value: 400 }, radius: { value: 25 } });
 
 function gruntGame() {
   var weightMoved = getTotalLbs(weights);
-  var frames = 1000;
+  var frames = 500;
   (function loop() {
     setTimeout(function () {
       console.log(weightMoved);
       if (weightMoved > 0) {
-        move(frames);
+        Pink.movecircle(frames);
+        Blue.movecircle(frames * 1.2);
+        Yellow.movecircle(frames * 1.4);
+        Tens.movecircle(frames * 1.3);
+        Fifteens.movecircle(frames * 1.4);
+        Twentyfives.movecircle(frames * 1.5);
+        Thirtyfives.movecircle(frames * 1.6);
+        Fortyfives.movecircle(frames * 1.7);
+        Bags.movecircle(frames * 2);
         loop();
       }
       weightMoved -= 100;
@@ -86,18 +100,5 @@ function gruntGame() {
   })();
 }
 
-// add players
-var player1 = Object.create(Player, { 'name': { value: 'Bob' }, 'agility': { value: 5 } });
-var player2 = Object.create(Player, { 'name': { value: 'Sally' }, 'agility': { value: 3 } });
-var player3 = Object.create(Player, { 'name': { value: 'Tim' }, 'agility': { value: 6 } });
-
 // start game
 gruntGame();
-
-/*
-console.log("Total weight moved per round " + getTotalLbs(weights) + ' lbs');
-console.log("Total weight moved per round " + getTotalKgs(weights) + ' kgs');
-console.log("Power output per round " + gruntWork(weights,distance,timecap) + ' newtons');
-console.log(Player.isPrototypeOf(player1));
-console.log(player1.name + " " + player1.agility);
-*/
