@@ -1,0 +1,27 @@
+{
+  "name": "grunt-work-game",
+  "version": "1.0.0",
+  "description": "Game example of moving weights from 1 area to another",
+  "main": "gruntWork.js",
+  "scripts": {
+    "build": "babel gruntWork.js -d lib"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/satoyami/gruntWorkGame.git"
+  },
+  "keywords": [
+    "javascript",
+    "game",
+    "babel"
+  ],
+  "author": "AJ Engwall",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/satoyami/gruntWorkGame/issues"
+  },
+  "homepage": "https://github.com/satoyami/gruntWorkGame#readme"
+}
