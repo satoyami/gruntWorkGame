@@ -1,8 +1,7 @@
 'use strict';
 
-/*
- * Global Variable Definitions
-*/
+// Global Variable Definitions
+
 var paper = Raphael("paper", 600, 450);
 var people = 3; // number of people per team
 var timecap = 180; // seconds in 3 minutes
@@ -18,18 +17,33 @@ var distm = function distm(dist) {
 console.log(distm(distance));
 
 // Player constructor object
-var Player = {};
+var Player = {
+  pickLoad: function pickLoad() {
+    var pLoad = Math.floor(Math.random() * weights.length);
+    if (weights[pLoad].qty > 0) {
+      return pLoad;
+    } else {
+      return Math.floor(Math.random() * weights.length);
+    }
+  }
+};
 // add players
 var player1 = Object.create(Player, { name: { value: 'Bob' }, agility: { value: 5 } });
 var player2 = Object.create(Player, { name: { value: 'Sally' }, agility: { value: 3 } });
 var player3 = Object.create(Player, { name: { value: 'Tim' }, agility: { value: 6 } });
 
-/*
- * amount of weight to move
- * load - how many units of weight type
- * can be moved at a time per person
- */
-var weights = [{ 'name': 'pink', 'type': 'kettlebell', 'qty': 13, 'lbs': 15, 'pts': 1, 'load': 2 }, { 'name': 'blue', 'type': 'kettlebell', 'qty': 12, 'lbs': 25, 'pts': 2, 'load': 2 }, { 'name': 'yellow', 'type': 'kettlebell', 'qty': 6, 'lbs': 35, 'pts': 3, 'load': 2 }, { 'name': 'ten', 'type': 'plate', 'qty': 17, 'lbs': 10, 'pts': 1, 'load': 5 }, { 'name': 'fifteen', 'type': 'plate', 'qty': 19, 'lbs': 15, 'pts': 2, 'load': 3 }, { 'name': 'twentyfive', 'type': 'plate', 'qty': 16, 'lbs': 25, 'pts': 3, 'load': 3 }, { 'name': 'thirtyfive', 'type': 'plate', 'qty': 8, 'lbs': 35, 'pts': 4, 'load': 2 }, { 'name': 'fortyfive', 'type': 'plate', 'qty': 6, 'lbs': 45, 'pts': 5, 'load': 2 }, { 'name': 'bag', 'type': 'sandbag', 'qty': 1, 'lbs': 90, 'pts': 8, 'load': 1 }];
+// amount of weight to move
+// load - how many units of weight type
+// can be moved at a time per person
+var weights = [{ 'name': 'pink', 'color': 'pink', 'type': 'kettlebell', 'qty': 13, 'lbs': 15, 'pts': 1, 'load': 2, 'offset': 30 }, { 'name': 'blue', 'color': 'blue', 'type': 'kettlebell', 'qty': 12, 'lbs': 25, 'pts': 2, 'load': 2, 'offset': 75 }, { 'name': 'yellow', 'color': 'yellow', 'type': 'kettlebell', 'qty': 6, 'lbs': 35, 'pts': 3, 'load': 2, 'offset': 120 }, { 'name': 'ten', 'color': 'black', 'type': 'plate', 'qty': 17, 'lbs': 10, 'pts': 1, 'load': 5, 'offset': 165 }, { 'name': 'fifteen', 'color': 'black', 'type': 'plate', 'qty': 19, 'lbs': 15, 'pts': 2, 'load': 3, 'offset': 210 }, { 'name': 'twentyfive', 'color': 'black', 'type': 'plate', 'qty': 16, 'lbs': 25, 'pts': 3, 'load': 3, 'offset': 255 }, { 'name': 'thirtyfive', 'color': 'black', 'type': 'plate', 'qty': 8, 'lbs': 35, 'pts': 4, 'load': 2, 'offset': 300 }, { 'name': 'fortyfive', 'color': 'black', 'type': 'plate', 'qty': 6, 'lbs': 45, 'pts': 5, 'load': 2, 'offset': 345 }, { 'name': 'bag', 'color': 'green', 'type': 'sandbag', 'qty': 1, 'lbs': 90, 'pts': 8, 'load': 1, 'offset': 400 }];
+
+function getTotalQty(arr) {
+  var total = 0;
+  arr.forEach(function (w) {
+    total = total + w['qty'];
+  });
+  return total;
+}
 
 function getTotalLbs(arr) {
   var total = 0;
@@ -54,10 +68,10 @@ function force(weight, dist, time) {
   return force;
 }
 
+// Define moving load animation
 var Load = {
-  radius: 20,
   movecircle: function movecircle(delay) {
-    var circle = paper.circle(30, this.offset, this.radius).attr({
+    var circle = paper.circle(30, this.offset, 20).attr({
       fill: this.color,
       "stroke-width": 2,
       stroke: "black"
@@ -67,38 +81,42 @@ var Load = {
   }
 };
 
-var Pink = Object.create(Load, { color: { value: "pink" }, offset: { value: 30 } });
-var Blue = Object.create(Load, { color: { value: "blue" }, offset: { value: 75 } });
-var Yellow = Object.create(Load, { color: { value: "yellow" }, offset: { value: 120 } });
-var Tens = Object.create(Load, { color: { value: "black" }, offset: { value: 165 } });
-var Fifteens = Object.create(Load, { color: { value: "black" }, offset: { value: 210 } });
-var Twentyfives = Object.create(Load, { color: { value: "black" }, offset: { value: 255 } });
-var Thirtyfives = Object.create(Load, { color: { value: "black" }, offset: { value: 300 } });
-var Fortyfives = Object.create(Load, { color: { value: "black" }, offset: { value: 345 } });
-var Bags = Object.create(Load, { color: { value: "green" }, offset: { value: 400 }, radius: { value: 25 } });
-
-function gruntGame() {
-  var weightMoved = getTotalLbs(weights);
+function gruntGame(player) {
+  var p1 = player;
+  var L1 = Object.create(Load);
+  var selectLoad = 0;
+  var tripTotal = 0;
+  var startQty = getTotalQty(weights);
+  var finishQty = 0;
+  var startAreaWeight = getTotalLbs(weights);
+  var finishAreaWeight = 0;
   var frames = 500;
   (function loop() {
     setTimeout(function () {
-      console.log(weightMoved);
-      if (weightMoved > 0) {
-        Pink.movecircle(frames);
-        Blue.movecircle(frames * 1.2);
-        Yellow.movecircle(frames * 1.4);
-        Tens.movecircle(frames * 1.3);
-        Fifteens.movecircle(frames * 1.4);
-        Twentyfives.movecircle(frames * 1.5);
-        Thirtyfives.movecircle(frames * 1.6);
-        Fortyfives.movecircle(frames * 1.7);
-        Bags.movecircle(frames * 2);
-        loop();
-      }
-      weightMoved -= 100;
+      selectLoad = p1.pickLoad();
+      console.log("----pickLoad returns: " + selectLoad);
+      if (weights[selectLoad].qty > 0) {
+        tripTotal = weights[selectLoad].lbs * weights[selectLoad].load;
+        weights[selectLoad].qty -= weights[selectLoad].load;
+        console.log("Weight at start area " + startAreaWeight);
+        console.log("Weight at finish area " + finishAreaWeight);
+        console.log("player1 selects " + weights[selectLoad].name);
+        if (startAreaWeight > 0) {
+          L1.offset = weights[selectLoad].offset;
+          L1.color = weights[selectLoad].color;
+          L1.movecircle(frames * 1.3);
+          loop();
+        }
+        startAreaWeight -= tripTotal;
+        finishAreaWeight += tripTotal;
+        // console.log(weights);
+      } else {
+          console.log("Selectin new load");
+          loop();
+        }
     }, frames);
   })();
 }
 
 // start game
-gruntGame();
+gruntGame(player1);
